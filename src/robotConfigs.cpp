@@ -6,11 +6,13 @@
 #include "pros/adi.hpp"
 #include "pros/ai_vision.hpp"
 #include "pros/imu.hpp"
+#include "pros/motors.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <string>
 #include <vector>
 #include "robotConfigs.h"
+#include "commands/CommandScheduler.hpp"
 
 lemlib::Pose InitialPose(0,-64, 0);
 
@@ -25,6 +27,8 @@ pros::MotorGroup elevator({15, -8}, pros::v5::MotorGears::green);
 pros::Motor wrist(16, pros::v5::MotorGears::blue);
 
 pros::Motor claw(7, pros::v5::MotorGears::red); 
+
+pros::Motor motor1(10, pros::v5::MotorGears::red);
 
 int poseSelection = 0;
 
@@ -129,6 +133,42 @@ void goToGoal() {
     chassis.moveToPoint(GoalPoses[poseSelection].x, GoalPoses[poseSelection].y, 50, {.maxSpeed = 50});
 }
 
+void setLevelElevator(int level) {
+    if (level == 1) {
+        if (calculateNearGoal() == 0) {
+            elevator.move_absolute(2100, 200); //1400
+        } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
+            elevator.move_absolute(1760, 200); //960
+        } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
+            elevator.move_absolute(1360, 200); //560
+        }
+    } else if (level == 2) {
+        if (calculateNearGoal() == 0) {
+            elevator.move_absolute(3300, 200); //2500
+        } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
+            elevator.move_absolute(2900, 200); //2100
+        } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
+            elevator.move_absolute(2500, 200); //1700
+        }
+    } else if (level == 3) {
+        if (calculateNearGoal() == 0) {
+            elevator.move_absolute(4500, 200); //3700
+        } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
+            elevator.move_absolute(4000, 200); //3200
+        } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
+            elevator.move_absolute(3600, 200); //2800
+        }
+    } else if (level == 4) {
+        if (calculateNearGoal() == 0) {
+            elevator.move_absolute(4500, 200); //3700
+        } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
+            elevator.move_absolute(4500, 200); //4400
+        } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
+            elevator.move_absolute(4500, 200); //4000
+        }
+    }
+}
+
 void setSelection(bool reset, bool increment) {
     if (reset) {
         poseSelection = calculateNearGoal();
@@ -150,12 +190,12 @@ pros::Task screen_task([]() {
         pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
         pros::lcd::print(4, "Elevator: %f", elevator.get_position()); // elevator position
         //pros::lcd::set_text(5, "Claw Position: " + std::to_string(claw.get_position())); // wrist position
-        //pros::lcd::print(4, "Goal: %d", poseSelection);
+        pros::lcd::print(5, "Goal: %d", calculateNearGoal());
 
         if (pros::AIVision::is_type(vision.get_object(0), pros::AivisionDetectType::tag)) {
-            pros::lcd::print(5, "Id Detected: %d", vision.get_object(0).id);
+            pros::lcd::print(6, "Id Detected: %d", vision.get_object(0).id);
         } else {
-            pros::lcd::print(5, "No Id detected");
+            pros::lcd::print(6, "No Id detected");
         }
         
 		//pros::lcd::set_text(3, "Wrist Position: " + std::to_string(wrist.get_position()));
@@ -177,6 +217,7 @@ void on_center_button() {
 
 // initialize function. Runs on program startup
 void initialize() {
+    //scheduler.run();
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
     chassis.setPose(InitialPose.x, InitialPose.y, InitialPose.theta);
@@ -184,8 +225,11 @@ void initialize() {
 
     //pros::lcd::set_text(1, "Hello PROS User!");
 
-	elevator.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-    elevator.brake();
+	pros::Motor(15).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    pros::Motor(8).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+    pros::Motor(15).brake();
+    pros::Motor(8).brake();
 
 	//pros::lcd::register_btn1_cb(on_center_button);
 }

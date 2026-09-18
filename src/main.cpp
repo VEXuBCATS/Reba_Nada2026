@@ -160,7 +160,10 @@ void autoTest() {
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	//claw.set_zero_position(-1000);
+	int level = 1;
+	uint32_t tiempoInicio = 0;
+	bool isExecute2 = false;
+	bool isExecute = false;
 
 
 	while (true) {
@@ -180,23 +183,9 @@ void opcontrol() {
         }
 			*/
 
-		//2600
-		//100
 		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);    // Gets amount forward/backward from left joystick
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
-
-		/*
-		
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && (std::abs(elevator.get_position()) <= 5100) ) {  // If R1 is pressed and elevator is not at top position
-			elevator.move(127);                      // Move elevator up at full speed
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && (std::abs(elevator.get_position()) >= 200) ) {  // If L2 is pressed and elevator is not at bottom position
-			elevator.move(-127);                     // Move elevator down at full speed
-		} else {
-			elevator.move(0);                        
-		}
-
-		*/
 
 		/*
 
@@ -208,34 +197,66 @@ void opcontrol() {
 			//wrist.move(-127);          
 		}
 			*/
+		//Altura max:4400
+		//Altura min:150
 
-			/*
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-			//claw.move(127);
-			claw.move_absolute(-1000, 100);              
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {  
-			//claw.move(-127);
-			claw.move_absolute(0, 100);               
+		/*
+		if(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120 && (std::abs(elevator.get_position()) <= 4400)) {
+			elevator.move(100);
+		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120 && (std::abs(elevator.get_position()) >= 150)) {
+			elevator.move(-100);
+		} else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			elevator.move(0);
 		}
 			*/
+			
 
-		//Elevator Max: 6000
+		
+		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {
+			if (!isExecute) {
+				level += 1;
+				if (level > 4) {
+					level = 4;
+				}
+				isExecute = true;
+			}
+		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120) {
+			if (!isExecute) {
+				level -= 1;
+				if (level < 1) {
+					level = 1;
+				}
+				isExecute = true;
+			}
+		} else {
+			isExecute = false;
+		}
 
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
-			piston.extend();        
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {  
-			piston.retract();         
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			elevator.move_absolute(15, 200);
+			piston.extend(); 
+			isExecute2 = true;       
+			level = 1;
+		} else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+			piston.retract();
+			if (isExecute2) {
+				tiempoInicio = pros::millis();
+			}
+			isExecute2 = false;
+		}
+
+		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250) {
+			setLevelElevator(level);
+		}
+
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+			piston.extend();     
 		}
 
 		
 
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2) && (std::abs(elevator.get_position()) <= 3000) ) {  // If R1 is pressed and elevator is not at top position
-			elevator.move(100);                      // Move elevator up at full speed
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (std::abs(elevator.get_position()) >= 250) ) {  // If L2 is pressed and elevator is not at bottom position
-			elevator.move(-100);                     // Move elevator down at full speed
-		} else {
-			elevator.move(0);                        
-		}
+		
+
 
 		
 		/*
