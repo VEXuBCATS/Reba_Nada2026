@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include "robotConfigs.h"
-#include "commands/CommandScheduler.hpp"
+//#include "commands/CommandScheduler.hpp"
 
 lemlib::Pose InitialPose(0,-64, 0);
 
@@ -134,7 +134,9 @@ void goToGoal() {
 }
 
 void setLevelElevator(int level) {
-    if (level == 1) {
+    if (level == 0) {
+        elevator.move_absolute(15, 200);
+    } else if (level == 1) {
         if (calculateNearGoal() == 0) {
             elevator.move_absolute(2100, 200); //1400
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
@@ -218,6 +220,7 @@ void on_center_button() {
 // initialize function. Runs on program startup
 void initialize() {
     //scheduler.run();
+
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
     chassis.setPose(InitialPose.x, InitialPose.y, InitialPose.theta);
@@ -225,11 +228,15 @@ void initialize() {
 
     //pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::Motor(15).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    pros::Motor(15).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     pros::Motor(8).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
     pros::Motor(15).brake();
     pros::Motor(8).brake();
+    elevator.tare_position();
+    setLevelElevator(0);
+
+	
 
 	//pros::lcd::register_btn1_cb(on_center_button);
 }

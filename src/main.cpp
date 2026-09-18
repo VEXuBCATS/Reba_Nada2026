@@ -160,7 +160,7 @@ void autoTest() {
  */
 void opcontrol() {
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	int level = 1;
+	int level = 0;
 	uint32_t tiempoInicio = 0;
 	bool isExecute2 = false;
 	bool isExecute = false;
@@ -223,8 +223,8 @@ void opcontrol() {
 		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120) {
 			if (!isExecute) {
 				level -= 1;
-				if (level < 1) {
-					level = 1;
+				if (level < 0) {
+					level = 0;
 				}
 				isExecute = true;
 			}
