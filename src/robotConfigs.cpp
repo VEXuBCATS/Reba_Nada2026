@@ -138,35 +138,35 @@ void setLevelElevator(int level) {
         elevator.move_absolute(15, 200);
     } else if (level == 1) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(2100, 200); //1400
+            elevator.move_absolute(2200, 200); //1400
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(1760, 200); //960
+            elevator.move_absolute(1860, 200); //960
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(1360, 200); //560
+            elevator.move_absolute(1460, 200); //560
         }
     } else if (level == 2) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(3300, 200); //2500
+            elevator.move_absolute(3400, 200); //2500
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(2900, 200); //2100
+            elevator.move_absolute(3000, 200); //2100
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(2500, 200); //1700
+            elevator.move_absolute(2600, 200); //1700
         }
     } else if (level == 3) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(4500, 200); //3700
+            elevator.move_absolute(4600, 200); //3700
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(4000, 200); //3200
+            elevator.move_absolute(4100, 200); //3200
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(3600, 200); //2800
+            elevator.move_absolute(3700, 200); //2800
         }
     } else if (level == 4) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(4500, 200); //3700
+            elevator.move_absolute(4600, 200); //3700
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(4500, 200); //4400
+            elevator.move_absolute(4600, 200); //4400
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(4500, 200); //4000
+            elevator.move_absolute(4600, 200); //4000
         }
     }
 }
