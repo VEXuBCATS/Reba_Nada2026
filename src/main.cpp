@@ -209,6 +209,9 @@ void opcontrol() {
 			elevator.move(0);
 		}
 			*/
+
+		
+	
 			
 
 		
@@ -251,9 +254,7 @@ void opcontrol() {
 
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			piston.extend();     
-		}
-
-		
+		}	
 
 		
 
