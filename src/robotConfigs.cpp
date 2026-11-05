@@ -16,13 +16,13 @@
 
 lemlib::Pose InitialPose(0,-64, 0);
 
-pros::adi::Pneumatics piston('A', false);
+pros::adi::Pneumatics piston('A', false, true); // extended_is_low = true -> lógica del pistón invertida
 
 pros::MotorGroup right_motor_group({1, 2, -9}, pros::v5::MotorGears::blue);
 // right motor group
 pros::MotorGroup left_motor_group({-11, -12, 19}, pros::v5::MotorGears::blue);
 
-pros::MotorGroup elevator({15, -8}, pros::v5::MotorGears::green);
+pros::MotorGroup elevator({-15, -8}, pros::v5::MotorGears::green);
 
 pros::Motor wrist(16, pros::v5::MotorGears::blue);
 
@@ -37,7 +37,7 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group (swapped to
                               &right_motor_group, // right motor group (swapped to invert turn)
                               15, // 10 inch track width
                               lemlib::Omniwheel::NEW_325, // using new 4" omnis
-                              320, // drivetrain rpm is 600
+                              360, // drivetrain rpm is 360
                               2 // horizontal drift is 10N (for now)
 );
 
