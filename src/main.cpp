@@ -190,12 +190,6 @@ void opcontrol() {
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
 
-		if (isToggle()) {
-			toggle.move_velocity(50);
-		} else {
-			toggle.move_velocity(0);
-		}
-		
 		/*
 		if (elevator.get_position() >= maxHigh || elevator.get_position() <= minLow) {
 			elevator.move(0);
@@ -211,15 +205,23 @@ void opcontrol() {
 		}
 			*/
 
+			/*
+		if (isToggleBLUE() || isToggleYELLOW()) {
+				toggle.move_velocity(100);
+		} else {
+				toggle.move_velocity(0);
+		}
+				*/
 		
-		/*
-	
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			toggle.move_velocity(100);
+			if (isToggleRED()) {
+				toggle.move_velocity(0);
+			} else {
+				toggle.move_velocity(100);
+			}	
 		} else {
 			toggle.move_velocity(0);
-		}
-			*/
+		}	
 		
 		
 		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {

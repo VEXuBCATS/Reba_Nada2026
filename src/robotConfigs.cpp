@@ -49,13 +49,13 @@ pros::Imu imu(20);
 // horizontal tracking wheel encoder
 pros::v5::AIVision vision(14);
 
-pros::Rotation horizontal_encoder(4);
+pros::Rotation horizontal_encoder(18);
 // vertical tracking wheel encoder
-pros::Rotation vertical_encoder(-18);
+pros::Rotation vertical_encoder(-4);
 // horizontal tracking wheel
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -7.25);
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -7.5);
 // vertical tracking wheel
-lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, -2.75);
+lemlib::TrackingWheel vertical_tracking_wheel(&vertical_encoder, lemlib::Omniwheel::NEW_2, 3.5);
 
 // odometry settings
 lemlib::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel 1, set to null
@@ -108,8 +108,16 @@ pros::Optical sensor(13);
 
 
 
-bool isToggle() {
-    return sensor.get_hue() > 100;
+bool isToggleRED() {
+    return sensor.get_hue() > 345 || sensor.get_hue() < 15;
+}
+
+bool isToggleBLUE() {
+    return sensor.get_hue() > 180 && sensor.get_hue() < 300;
+}
+
+bool isToggleYELLOW() {
+    return sensor.get_hue() > 30 && sensor.get_hue() < 80;
 }
 
 
@@ -225,7 +233,7 @@ pros::Task screen_task([]() {
             pros::lcd::print(6, "No Id detected");
         }
 
-        pros::lcd::print(7, "angle: %f", getPiece());
+        pros::lcd::print(7, "color: %f", sensor.get_hue());
         
 		//pros::lcd::set_text(3, "Wrist Position: " + std::to_string(wrist.get_position()));
 
@@ -247,6 +255,8 @@ void on_center_button() {
 // initialize function. Runs on program startup
 void initialize() {
     //scheduler.run();
+
+    sensor.set_led_pwm(100);
 
     vision.reset();
     vision.enable_detection_types(pros::AivisionModeType::colors);
