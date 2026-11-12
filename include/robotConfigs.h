@@ -15,6 +15,8 @@ extern pros::Motor wrist;
 
 extern pros::Motor claw;
 
+extern pros::Motor toggle;
+
 extern pros::Motor motor;
 
 extern pros::AIVision vision;

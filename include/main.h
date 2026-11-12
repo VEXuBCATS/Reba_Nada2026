@@ -67,6 +67,7 @@ void auto2(void);
 void autonomous(void);
 void goToGoal(void);
 void setLevelElevator(int level);
+bool isToggle();
 void setSelection(bool reset, bool increment);
 void initialize(void);
 void disabled(void);

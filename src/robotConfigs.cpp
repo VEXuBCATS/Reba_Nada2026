@@ -28,7 +28,10 @@ pros::Motor wrist(16, pros::v5::MotorGears::blue);
 
 pros::Motor claw(7, pros::v5::MotorGears::red); 
 
+pros::Motor toggle(-17);
+
 pros::Motor motor1(10, pros::v5::MotorGears::red);
+
 
 int poseSelection = 0;
 
@@ -44,8 +47,7 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group (swapped to
 // imu
 pros::Imu imu(20);
 // horizontal tracking wheel encoder
-pros::v5::AIVision vision(21);
-
+pros::v5::AIVision vision(14);
 
 pros::Rotation horizontal_encoder(4);
 // vertical tracking wheel encoder
@@ -102,6 +104,28 @@ std::vector<lemlib::Pose> GoalPoses = {
     lemlib::Pose(23.5, -47)
 };
 
+pros::Optical sensor(13);
+
+
+
+bool isToggle() {
+    return sensor.get_hue() > 100;
+}
+
+
+double getPiece() {
+    pros::AIVision::Color color = {.id = 1, .red = 200, .green = 0, .blue = 0, .hue_range = 20, .saturation_range = 0.5};
+    vision.set_color(color);
+
+    auto objects = vision.get_all_objects();
+    for (auto &object : objects) {
+            if (pros::AIVision::is_type(object, pros::AivisionDetectType::color)) {
+                return object.object.color.xoffset;
+            }
+        }
+    return 0;
+}
+
 int calculateNearGoal() {
     double distance[5];
     int PedestalDesired = 0;
@@ -138,35 +162,35 @@ void setLevelElevator(int level) {
         elevator.move_absolute(15, 200);
     } else if (level == 1) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(2200, 200); //1400
+            elevator.move_absolute(1700, 200); //
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(1860, 200); //960
+            elevator.move_absolute(1230, 200); //
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(1460, 200); //560
+            elevator.move_absolute(750, 200); //
         }
     } else if (level == 2) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(3400, 200); //2500
+            elevator.move_absolute(2600, 200); //
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(3000, 200); //2100
+            elevator.move_absolute(2200, 200); //
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(2600, 200); //1700
+            elevator.move_absolute(1750, 200); //
         }
     } else if (level == 3) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(4600, 200); //3700
+            elevator.move_absolute(3600, 200); //
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(4100, 200); //3200
+            elevator.move_absolute(3200, 200); //
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(3700, 200); //2800
+            elevator.move_absolute(2820, 200); //
         }
     } else if (level == 4) {
         if (calculateNearGoal() == 0) {
-            elevator.move_absolute(4600, 200); //3700
+            elevator.move_absolute(3600, 200); //
         } else if (calculateNearGoal() == 1 || calculateNearGoal() == 4) {
-            elevator.move_absolute(4600, 200); //4400
+            elevator.move_absolute(4050, 200); //
         } else if (calculateNearGoal() == 2 || calculateNearGoal() == 3) {
-            elevator.move_absolute(4600, 200); //4000
+            elevator.move_absolute(3800, 200); //
         }
     }
 }
@@ -183,8 +207,9 @@ void setSelection(bool reset, bool increment) {
 
 
 pros::Task screen_task([]() {
+    
     while (true) {
-        vision.enable_detection_types(pros::AivisionModeType::tags);
+        pros::aivision_object_s_t detected_object = vision.get_object(0);
 
         // print robot location to the brain screen
         pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
@@ -199,6 +224,8 @@ pros::Task screen_task([]() {
         } else {
             pros::lcd::print(6, "No Id detected");
         }
+
+        pros::lcd::print(7, "angle: %f", getPiece());
         
 		//pros::lcd::set_text(3, "Wrist Position: " + std::to_string(wrist.get_position()));
 
@@ -221,6 +248,8 @@ void on_center_button() {
 void initialize() {
     //scheduler.run();
 
+    vision.reset();
+    vision.enable_detection_types(pros::AivisionModeType::colors);
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
     chassis.setPose(InitialPose.x, InitialPose.y, InitialPose.theta);

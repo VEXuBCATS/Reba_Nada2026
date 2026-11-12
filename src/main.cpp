@@ -165,6 +165,9 @@ void opcontrol() {
 	bool isExecute2 = false;
 	bool isExecute = false;
 
+	double maxHigh = 4050;
+	double minLow = 15;
+
 
 	while (true) {
 
@@ -187,33 +190,37 @@ void opcontrol() {
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
 
-		/*
-
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-			//wrist.move(127);
-			wrist.move_absolute(740, 600);             
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {  
-			wrist.move_absolute(0, 600);
-			//wrist.move(-127);          
+		if (isToggle()) {
+			toggle.move_velocity(50);
+		} else {
+			toggle.move_velocity(0);
 		}
-			*/
-		//Altura max:4400
-		//Altura min:150
+		
+		/*
+		if (elevator.get_position() >= maxHigh || elevator.get_position() <= minLow) {
+			elevator.move(0);
+		}*/
 
 		/*
-		if(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120 && (std::abs(elevator.get_position()) <= 4400)) {
+		if(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120 && (std::abs(elevator.get_position()) <= maxHigh)) {
 			elevator.move(100);
-		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120 && (std::abs(elevator.get_position()) >= 150)) {
+		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120 && (std::abs(elevator.get_position()) >= minLow)) {
 			elevator.move(-100);
-		} else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+		} else {
 			elevator.move(0);
 		}
 			*/
 
 		
+		/*
 	
-			
-
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+			toggle.move_velocity(100);
+		} else {
+			toggle.move_velocity(0);
+		}
+			*/
+		
 		
 		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {
 			if (!isExecute) {
@@ -234,6 +241,7 @@ void opcontrol() {
 		} else {
 			isExecute = false;
 		}
+			
 
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			elevator.move_absolute(15, 200);
@@ -255,6 +263,12 @@ void opcontrol() {
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			piston.extend();     
 		}	
+
+		/*
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+			piston.retract();     
+		}	
+			*/
 
 		
 
