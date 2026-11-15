@@ -5,6 +5,8 @@
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.h"
 #include "robotConfigs.h"
+#include "constants.h"
+
 
 /**
  * A callback function for LLEMU's center button.
@@ -12,19 +14,6 @@
  * When this callback is fired, it will toggle line 2 of the LCD text between
  * "I was pressed!" and nothing.
  */
-
-
-
-
-//pros::MotorGroup left_mg({-8, 10}, pros::v5::MotorGears::blue);    // Creates a motor group with forwards ports 1 & 3 and reversed port 2
-//pros::MotorGroup right_mg({4, -9}, pros::v5::MotorGears::blue);
-//pros::MotorGroup elevator({7,-6}, pros::v5::MotorGears::green);
-//pros::Motor wrist(11, pros::v5::MotorGears::blue);
-//pros::Motor claw(16, pros::v5::MotorGears::red); 
-//pros::IMU imu(20);
-
-
-
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -54,7 +43,8 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -67,83 +57,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-ASSET(rutaPrueba1_txt);
-ASSET(rutaPrueba2_txt);
-ASSET(path1_txt);
-ASSET(path2_txt);
-
 void autonomous() {
-	auto2();
+	autoOffset();
 }
-
-void auto2() {
-	chassis.setPose(0, -64, 0);
-	chassis.follow(path1_txt, 18, 4000);
-	chassis.turnToHeading(180, 750);
-
-	elevator.move_absolute(5000, 200);
-	pros::delay(1500);
-	chassis.moveToPoint(0, 0, 1000, {.maxSpeed = 80}, false);
-
-	chassis.moveToPoint(0, 24, 1000, {.forwards = false, .maxSpeed = 80}, true);
-	elevator.move_absolute(500, 200);
-	pros::delay(1500);
-
-	chassis.turnToHeading(135, 750);
-	chassis.follow(path2_txt, 18, 4000);
-
-	chassis.turnToHeading(0, 750);
-	chassis.moveToPoint(0, -64, 3000, {.forwards = false, .maxSpeed = 80}, false);
-}
-
-void auto1() {
-	chassis.setPose(0, -64, 0);
-	chassis.follow(rutaPrueba2_txt, 18, 6500);
-	chassis.moveToPoint(0, -64, 2000);
-	chassis.turnToHeading(0, 1000);
-	chassis.moveToPoint(0, -64, 2000, {.forwards = false});
-}
-
-void autoTest() {
-	chassis.setPose(0, 0, 0);
-	claw.set_zero_position(-1000);
-
-	chassis.moveToPoint(0, 32, 1250, {.maxSpeed = 80}, true);
-	elevator.move_absolute(2300, 200);
-	pros::delay(1000);
-
-	claw.move_absolute(-1000, 100);  
-	pros::delay(1000);
-
-	
-	chassis.moveToPoint(0, 15, 1250, {.forwards = false, .maxSpeed = 80}, true);
-	elevator.move_absolute(200, 200);
-	pros::delay(1000);
-	//pros::delay(500);
-	chassis.turnToHeading(40, 750, {.maxSpeed = 80});
-	//pros::delay(500);
-	chassis.moveToPoint(11.5, 22.5, 1250, {.maxSpeed = 80}, false);
-
-	chassis.swingToHeading(0, lemlib::DriveSide::LEFT, 750, {.maxSpeed = 80});
-
-	chassis.moveToPoint(11.5, 56.5, 1250, {.maxSpeed = 80}, false);
-
-	chassis.turnToHeading(-90, 750, {.maxSpeed = 80});
-
-	chassis.moveToPoint(-19, 56.5, 1250, {.maxSpeed = 80}, false);
-
-	chassis.turnToHeading(-180, 750, {.maxSpeed = 80});
-
-	chassis.moveToPoint(-19, 25, 1250, {.maxSpeed = 80}, false);
-
-	chassis.moveToPoint(0, 0, 1250, {.maxSpeed = 80}, false);
-
-	chassis.turnToHeading(0, 750, {.maxSpeed = 80});
-
-	chassis.moveToPoint(0, 0, 1250, {.forwards = false, .maxSpeed = 80}, false);
-}
-
-
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -159,41 +75,15 @@ void autoTest() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	int level = 0;
 	uint32_t tiempoInicio = 0;
 	bool isExecute2 = false;
 	bool isExecute = false;
-
-	double maxHigh = 4050;
-	double minLow = 15;
-
-
 	while (true) {
-
-		/*
-		if (master.get_digital(DIGITAL_L1) && master.get_digital(DIGITAL_R1)) {
-            
-            pros::lcd::set_text(6, "autonomo iniciado");
-            
-            pros::Task auto_task(autonomous);
-
-            pros::delay(30000);
-
-            auto_task.suspend();
-
-            pros::lcd::set_text(6, "autonomo finalizado");
-        }
-			*/
 
 		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);    // Gets amount forward/backward from left joystick
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
-
-		/*
-		if (elevator.get_position() >= maxHigh || elevator.get_position() <= minLow) {
-			elevator.move(0);
-		}*/
 
 		/*
 		if(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120 && (std::abs(elevator.get_position()) <= maxHigh)) {
@@ -205,23 +95,19 @@ void opcontrol() {
 		}
 			*/
 
-			/*
-		if (isToggleBLUE() || isToggleYELLOW()) {
-				toggle.move_velocity(100);
-		} else {
-				toggle.move_velocity(0);
-		}
-				*/
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+			sensor.set_led_pwm(100);
 			if (isToggleRED()) {
 				toggle.move_velocity(0);
 			} else {
 				toggle.move_velocity(100);
 			}	
 		} else {
+			sensor.set_led_pwm(0);
 			toggle.move_velocity(0);
 		}	
+		
 		
 		
 		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {
@@ -265,34 +151,6 @@ void opcontrol() {
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			piston.extend();     
 		}	
-
-		/*
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			piston.retract();     
-		}	
-			*/
-
-		
-
-
-		
-		/*
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y) == false) {
-			setSelection(true, false);
-		}
-
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
-			goToGoal();
-
-			if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
-				setSelection(false, false);
-			}
-			if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-				setSelection(false, true);
-			}
-		}
-			*/
-			
 
 		pros::delay(20);	
 	}

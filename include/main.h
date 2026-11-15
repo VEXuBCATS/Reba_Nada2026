@@ -65,6 +65,7 @@ extern "C" {
 void autoTest(void);
 void auto2(void);
 void autonomous(void);
+void autoOffset(void);
 void goToGoal(void);
 void setLevelElevator(int level);
 bool isToggleRED();

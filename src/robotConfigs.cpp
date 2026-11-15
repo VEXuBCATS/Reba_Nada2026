@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 #include "robotConfigs.h"
-//#include "commands/CommandScheduler.hpp"
+#include "constants.h"
 
-lemlib::Pose InitialPose(0,-64, 0);
+pros::Controller master(pros::E_CONTROLLER_MASTER);
 
 pros::adi::Pneumatics piston('A', false, true); // extended_is_low = true -> lógica del pistón invertida
 
@@ -28,12 +28,9 @@ pros::Motor wrist(16, pros::v5::MotorGears::blue);
 
 pros::Motor claw(7, pros::v5::MotorGears::red); 
 
-pros::Motor toggle(-17);
+pros::Motor toggle(17);
 
 pros::Motor motor1(10, pros::v5::MotorGears::red);
-
-
-int poseSelection = 0;
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group (swapped to invert turn)
@@ -96,17 +93,9 @@ lemlib::Chassis chassis(drivetrain, // drivetrain settings
                         sensors // odometry sensors
 );
 
-std::vector<lemlib::Pose> GoalPoses = {
-    lemlib::Pose(0, 0),
-    lemlib::Pose(-47, 23.5),
-    lemlib::Pose(-47, -23.5),
-    lemlib::Pose(-23.5, -47),
-    lemlib::Pose(23.5, -47)
-};
-
 pros::Optical sensor(13);
 
-
+int poseSelection = 0;
 
 bool isToggleRED() {
     return sensor.get_hue() > 345 || sensor.get_hue() < 15;
@@ -118,20 +107,6 @@ bool isToggleBLUE() {
 
 bool isToggleYELLOW() {
     return sensor.get_hue() > 30 && sensor.get_hue() < 80;
-}
-
-
-double getPiece() {
-    pros::AIVision::Color color = {.id = 1, .red = 200, .green = 0, .blue = 0, .hue_range = 20, .saturation_range = 0.5};
-    vision.set_color(color);
-
-    auto objects = vision.get_all_objects();
-    for (auto &object : objects) {
-            if (pros::AIVision::is_type(object, pros::AivisionDetectType::color)) {
-                return object.object.color.xoffset;
-            }
-        }
-    return 0;
 }
 
 int calculateNearGoal() {
@@ -233,10 +208,6 @@ pros::Task screen_task([]() {
             pros::lcd::print(6, "No Id detected");
         }
 
-        pros::lcd::print(7, "color: %f", sensor.get_hue());
-        
-		//pros::lcd::set_text(3, "Wrist Position: " + std::to_string(wrist.get_position()));
-
         // delay to save resources
         pros::delay(50);
     }
@@ -252,20 +223,29 @@ void on_center_button() {
 	}
 }
 
+void runAuto() {
+    for (int i = 3; i >= 1; i--) {
+        pros::lcd::clear();
+        pros::lcd::print(1, "Auto en: %d", i);
+        pros::delay(1000);
+    }
+
+    pros::lcd::set_text(6, "autonomo iniciado");
+            
+    pros::Task auto_task(autonomous);
+
+    pros::delay(30000);
+
+    auto_task.suspend();
+
+    pros::lcd::set_text(6, "autonomo finalizado");
+}
+
 // initialize function. Runs on program startup
 void initialize() {
-    //scheduler.run();
-
-    sensor.set_led_pwm(100);
-
-    vision.reset();
-    vision.enable_detection_types(pros::AivisionModeType::colors);
     pros::lcd::initialize(); // initialize brain screen
     chassis.calibrate(); // calibrate sensors
     chassis.setPose(InitialPose.x, InitialPose.y, InitialPose.theta);
-    // La tarea de pantalla ya está corriendo en segundo plano
-
-    //pros::lcd::set_text(1, "Hello PROS User!");
 
     pros::Motor(15).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
     pros::Motor(8).set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
@@ -273,9 +253,9 @@ void initialize() {
     pros::Motor(15).brake();
     pros::Motor(8).brake();
     elevator.tare_position();
-    setLevelElevator(0);
 
-	
+    setLevelElevator(0);	
 
-	//pros::lcd::register_btn1_cb(on_center_button);
+	pros::lcd::register_btn1_cb(on_center_button);
+    pros::lcd::register_btn2_cb(runAuto);
 }
