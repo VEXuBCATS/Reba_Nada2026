@@ -13,6 +13,7 @@
 #include <vector>
 #include "robotConfigs.h"
 #include "constants.h"
+#include "autos.h"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -194,13 +195,17 @@ pros::Task screen_task([]() {
     while (true) {
         pros::aivision_object_s_t detected_object = vision.get_object(0);
 
-        pros::lcd::print(1, "Alliance: ", currentAlliance);
+        //lineas 2 y 3 disponibles
+
+        //print match and auto configs
+        pros::lcd::print(0, "Alliance: %s ", std::string((currentAlliance == RED) ? "RED" : "BLUE"));
+        pros::lcd::print(1, "Autonomo: %s ", AutoModeNames[static_cast<int>(autoMode)]);
         // print robot location to the brain screen
         pros::lcd::print(4, "X: %f", chassis.getPose().x); // x
         pros::lcd::print(5, "Y: %f", chassis.getPose().y); // y
         pros::lcd::print(6, "Theta: %f", chassis.getPose().theta);
-        //pros::lcd::print(4, "Elevator: %f", elevator.get_position()); // elevator position
-        //pros::lcd::set_text(5, "Claw Position: " + std::to_string(claw.get_position())); // wrist position
+        //pros::lcd::print(2, "Elevator: %f", elevator.get_position()); // elevator position
+        //pros::lcd::set_text(3, "Claw Position: " + std::to_string(claw.get_position())); // wrist position
         pros::lcd::print(7, "Goal: %d", calculateNearGoal());
         
         // delay to save resources
@@ -221,7 +226,7 @@ void on_center_button() {
 void runAuto() {
     for (int i = 3; i >= 1; i--) {
         pros::lcd::clear();
-        pros::lcd::print(1, "Auto en: %d", i);
+        pros::lcd::print(3, "Auto en: %d", i);
         pros::delay(1000);
     }
 
@@ -238,6 +243,10 @@ void runAuto() {
 
 void changeAlliance() {
     currentAlliance = (currentAlliance == RED) ? BLUE : RED;
+}
+
+void changeAuto() {
+    autoMode = static_cast<AutoMode>((static_cast<int>(autoMode) + 1) % TOTAL);
 }
 
 // initialize function. Runs on program startup
@@ -257,5 +266,5 @@ void initialize() {
 
     pros::lcd::register_btn0_cb(changeAlliance);
 	pros::lcd::register_btn1_cb(on_center_button);
-    pros::lcd::register_btn2_cb(runAuto);
+    pros::lcd::register_btn2_cb(changeAuto);
 }

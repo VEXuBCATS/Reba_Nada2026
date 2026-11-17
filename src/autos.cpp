@@ -1,12 +1,16 @@
 #include "main.h"
 #include "robotConfigs.h"
+#include "autos.h"
 #include "constants.h"
+
+AutoMode autoMode = AutoMode::auto1;
 
 //Se importan los txt de las rutas
 ASSET(rutaPrueba1_txt);
 ASSET(rutaPrueba2_txt);
 ASSET(path1_txt);
 ASSET(path2_txt);
+
 
 void auto2() {
 	chassis.setPose(0, -64, 0);
@@ -90,8 +94,8 @@ void autoOffset() {
     double horizontalOffset = horizontalInches / radiansTurned;
     double verticalOffset = verticalInches / radiansTurned;
 
-    pros::lcd::print(7, "Offset Horizontal: %f", horizontalOffset);
-    pros::lcd::print(8, "Offset Vertical: %f", verticalOffset);
+    pros::lcd::print(2, "Offset Horizontal: %f", horizontalOffset);
+    pros::lcd::print(3, "Offset Vertical: %f", verticalOffset);
 
     pros::delay(1000); // Wait for 5 seconds to read the values
 }

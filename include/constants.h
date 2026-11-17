@@ -3,6 +3,12 @@
 #include "main.h"
 #include "robotConfigs.h"
 
+enum AllianceColor {
+    RED,
+    BLUE, 
+    any
+};
+
 extern int maxHeight;
 extern int minHeight;
 extern int trackingWheelDiameter; // in inches

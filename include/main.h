@@ -63,6 +63,7 @@
 extern "C" {
 #endif
 void autoTest(void);
+void auto1(void);
 void auto2(void);
 void autonomous(void);
 void autoOffset(void);

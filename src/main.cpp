@@ -1,11 +1,11 @@
 #include "main.h"
 //#include "pros/abstract_motor.hpp"
 //#include "pros/imu.hpp"
-#include "lemlib/asset.hpp"
 #include "lemlib/chassis/chassis.hpp"
 #include "pros/misc.h"
 #include "robotConfigs.h"
 #include "constants.h"
+#include "autos.h"
 
 
 /**
@@ -58,7 +58,22 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	autoOffset();
+	switch (autoMode) {
+		case AutoMode::auto1:
+			auto1();
+			break;
+		case AutoMode::auto2:
+			auto2();
+			break;
+		case AutoMode::autoTest:
+			autoTest();
+			break;
+		case AutoMode::autoOffset:
+			autoOffset();
+			break;
+		default:
+			break;
+	}
 }
 
 /**
@@ -84,17 +99,6 @@ void opcontrol() {
 		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);    // Gets amount forward/backward from left joystick
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
-
-		/*
-		if(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120 && (std::abs(elevator.get_position()) <= maxHigh)) {
-			elevator.move(100);
-		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120 && (std::abs(elevator.get_position()) >= minLow)) {
-			elevator.move(-100);
-		} else {
-			elevator.move(0);
-		}
-			*/
-
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			sensor.set_led_pwm(100);
