@@ -30,4 +30,10 @@ extern pros::AIVision vision;
 
 extern std::vector<lemlib::Pose> PedestalPoses;
 
+enum AllianceColor {
+    RED,
+    BLUE, 
+    any
+};
+
 #endif

@@ -98,7 +98,7 @@ void opcontrol() {
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			sensor.set_led_pwm(100);
-			if (isToggleRED()) {
+			if ((currentAlliance == RED) ? isToggleRED() : isToggleBLUE()) {
 				toggle.move_velocity(0);
 			} else {
 				toggle.move_velocity(100);

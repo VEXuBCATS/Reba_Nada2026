@@ -1,5 +1,6 @@
 #include "robotConfigs.h"
 #include "main.h"
+#include <any>
 
 static int maxHeight = 4050;
 static int minHeight = 15;
@@ -14,3 +15,6 @@ std::vector<lemlib::Pose> GoalPoses = {
     lemlib::Pose(-23.5, -47),
     lemlib::Pose(23.5, -47)
 };
+
+
+static AllianceColor currentAlliance = RED;

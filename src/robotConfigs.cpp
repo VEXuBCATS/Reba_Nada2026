@@ -194,20 +194,15 @@ pros::Task screen_task([]() {
     while (true) {
         pros::aivision_object_s_t detected_object = vision.get_object(0);
 
+        pros::lcd::print(1, "Alliance: ", currentAlliance);
         // print robot location to the brain screen
-        pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
-        pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
-        pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
-        pros::lcd::print(4, "Elevator: %f", elevator.get_position()); // elevator position
+        pros::lcd::print(4, "X: %f", chassis.getPose().x); // x
+        pros::lcd::print(5, "Y: %f", chassis.getPose().y); // y
+        pros::lcd::print(6, "Theta: %f", chassis.getPose().theta);
+        //pros::lcd::print(4, "Elevator: %f", elevator.get_position()); // elevator position
         //pros::lcd::set_text(5, "Claw Position: " + std::to_string(claw.get_position())); // wrist position
-        pros::lcd::print(5, "Goal: %d", calculateNearGoal());
-
-        if (pros::AIVision::is_type(vision.get_object(0), pros::AivisionDetectType::tag)) {
-            pros::lcd::print(6, "Id Detected: %d", vision.get_object(0).id);
-        } else {
-            pros::lcd::print(6, "No Id detected");
-        }
-
+        pros::lcd::print(7, "Goal: %d", calculateNearGoal());
+        
         // delay to save resources
         pros::delay(50);
     }
@@ -241,6 +236,10 @@ void runAuto() {
     pros::lcd::set_text(6, "autonomo finalizado");
 }
 
+void changeAlliance() {
+    currentAlliance = (currentAlliance == RED) ? BLUE : RED;
+}
+
 // initialize function. Runs on program startup
 void initialize() {
     pros::lcd::initialize(); // initialize brain screen
@@ -256,6 +255,7 @@ void initialize() {
 
     setLevelElevator(0);	
 
+    pros::lcd::register_btn0_cb(changeAlliance);
 	pros::lcd::register_btn1_cb(on_center_button);
     pros::lcd::register_btn2_cb(runAuto);
 }
