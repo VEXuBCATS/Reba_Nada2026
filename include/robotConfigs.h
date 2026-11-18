@@ -16,15 +16,12 @@ extern pros::Optical sensor;
 
 extern pros::adi::Pneumatics piston;
 
+extern pros::adi::Pneumatics wrist;
+
 extern pros::MotorGroup elevator;
-
-extern pros::Motor wrist;
-
-extern pros::Motor claw;
 
 extern pros::Motor toggle;
 
-extern pros::Motor motor;
 
 extern pros::AIVision vision;
 

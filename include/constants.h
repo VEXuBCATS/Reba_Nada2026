@@ -11,8 +11,11 @@ enum AllianceColor {
 
 extern int maxHeight;
 extern int minHeight;
+extern int minWristPosition;
 extern int trackingWheelDiameter; // in inches
 extern lemlib::Pose InitialPose;
 extern std::vector<lemlib::Pose> GoalPoses;
 extern AllianceColor currentAlliance;
+
+extern bool isTaking;
 #endif

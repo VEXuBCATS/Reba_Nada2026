@@ -5,6 +5,9 @@
 
 int maxHeight = 4050;
 int minHeight = 15;
+int minWristPosition = 200;
+
+bool isTaking = false;
 
 int trackingWheelDiameter = 2; // in inches
 

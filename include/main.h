@@ -70,6 +70,7 @@ void autoOffset(void);
 void goToGoal(void);
 void setLevelElevator(int level);
 bool isToggleRED();
+void turnWrist(void* param);
 bool isToggleBLUE();
 bool isToggleYELLOW();
 void setSelection(bool reset, bool increment);

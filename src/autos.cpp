@@ -42,13 +42,13 @@ void auto1() {
 
 void autoTest() {
 	chassis.setPose(0, 0, 0);
-	claw.set_zero_position(-1000);
+	//claw.set_zero_position(-1000);
 
 	chassis.moveToPoint(0, 32, 1250, {.maxSpeed = 80}, true);
 	elevator.move_absolute(2300, 200);
 	pros::delay(1000);
 
-	claw.move_absolute(-1000, 100);  
+	//claw.move_absolute(-1000, 100);  
 	pros::delay(1000);
 
 	

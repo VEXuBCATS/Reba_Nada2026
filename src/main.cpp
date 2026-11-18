@@ -91,28 +91,37 @@ void autonomous() {
  */
 void opcontrol() {
 	int level = 0;
-	uint32_t tiempoInicio = 0;
-	bool isExecute2 = false;
+	uint32_t tiempoInicio = 0;;
 	bool isExecute = false;
 	while (true) {
 
 		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);    // Gets amount forward/backward from left joystick
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
+
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
+			elevator.move_velocity(100);
+		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
+			elevator.move_velocity(-100);
+		} else {
+			elevator.move_velocity(0);
+		}
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			sensor.set_led_pwm(100);
 			if ((currentAlliance == RED) ? isToggleRED() : isToggleBLUE()) {
 				toggle.move_velocity(0);
 			} else {
-				toggle.move_velocity(100);
+				toggle.move_velocity(200);
 			}	
 		} else {
 			sensor.set_led_pwm(0);
 			toggle.move_velocity(0);
 		}	
-		
-		
+
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+			pros::Task wristTask(turnWrist);
+		}
 		
 		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {
 			if (!isExecute) {
@@ -136,24 +145,33 @@ void opcontrol() {
 			
 
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			elevator.move_absolute(15, 200);
+			if (!wrist.is_extended()) {
+				setLevelElevator(0);
+			} else {
+				pros::Task wristTask(turnWrist);
+			}
 			piston.extend(); 
-			isExecute2 = true;       
+			isTaking = true;       
 			level = 1;
 		} else if (!master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			piston.retract();
-			if (isExecute2) {
+			if (isTaking) {
 				tiempoInicio = pros::millis();
 			}
-			isExecute2 = false;
+			isTaking = false;
 		}
 
-		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250) {
+		/*
+
+		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250 && !master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
 			setLevelElevator(level);
 		}
 
+		*/
+
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-			piston.extend();     
+			piston.extend();
+			elevator.move_relative(-50, 200);     
 		}	
 
 		pros::delay(20);	

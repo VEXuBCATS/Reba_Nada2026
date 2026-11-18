@@ -17,7 +17,9 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::adi::Pneumatics piston('A', false, true); // extended_is_low = true -> lógica del pistón invertida
+pros::adi::Pneumatics piston('A', false, true);
+
+pros::adi::Pneumatics wrist('B', true, true);
 
 pros::MotorGroup right_motor_group({1, 2, -9}, pros::v5::MotorGears::blue);
 // right motor group
@@ -25,13 +27,7 @@ pros::MotorGroup left_motor_group({-11, -12, 19}, pros::v5::MotorGears::blue);
 
 pros::MotorGroup elevator({-15, -8}, pros::v5::MotorGears::green);
 
-pros::Motor wrist(16, pros::v5::MotorGears::blue);
-
-pros::Motor claw(7, pros::v5::MotorGears::red); 
-
-pros::Motor toggle(17);
-
-pros::Motor motor1(10, pros::v5::MotorGears::red);
+pros::Motor toggle(17, pros::v5::MotorGears::green);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group (swapped to invert turn)
@@ -108,6 +104,16 @@ bool isToggleBLUE() {
 
 bool isToggleYELLOW() {
     return sensor.get_hue() > 30 && sensor.get_hue() < 80;
+}
+
+void turnWrist(void* param) {
+    if (elevator.get_position() < minWristPosition) {
+        elevator.move_absolute(minWristPosition + 25, 200);
+        while (elevator.get_position() < minWristPosition) {
+            pros::delay(10);
+        }
+    } 
+    wrist.toggle();
 }
 
 int calculateNearGoal() {
@@ -204,8 +210,7 @@ pros::Task screen_task([]() {
         pros::lcd::print(4, "X: %f", chassis.getPose().x); // x
         pros::lcd::print(5, "Y: %f", chassis.getPose().y); // y
         pros::lcd::print(6, "Theta: %f", chassis.getPose().theta);
-        //pros::lcd::print(2, "Elevator: %f", elevator.get_position()); // elevator position
-        //pros::lcd::set_text(3, "Claw Position: " + std::to_string(claw.get_position())); // wrist position
+        pros::lcd::print(2, "Elevator: %f", elevator.get_position()); // elevator position
         pros::lcd::print(7, "Goal: %d", calculateNearGoal());
         
         // delay to save resources
