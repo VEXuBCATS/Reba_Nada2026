@@ -14,6 +14,7 @@
 #include "robotConfigs.h"
 #include "constants.h"
 #include "autos.h"
+#include "pros/rtos.hpp"
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
@@ -25,7 +26,7 @@ pros::MotorGroup right_motor_group({1, 2, -9}, pros::v5::MotorGears::blue);
 // right motor group
 pros::MotorGroup left_motor_group({-11, -12, 19}, pros::v5::MotorGears::blue);
 
-pros::MotorGroup elevator({-15, -8}, pros::v5::MotorGears::green);
+pros::MotorGroup elevator({15, 8}, pros::v5::MotorGears::green);
 
 pros::Motor toggle(17, pros::v5::MotorGears::green);
 
@@ -107,13 +108,14 @@ bool isToggleYELLOW() {
 }
 
 void turnWrist(void* param) {
-    if (elevator.get_position() < minWristPosition) {
+    while (elevator.get_position() < minWristPosition) {
         elevator.move_absolute(minWristPosition + 25, 200);
-        while (elevator.get_position() < minWristPosition) {
-            pros::delay(10);
-        }
+        isWristBusy = true;
     } 
+
     wrist.toggle();
+    pros::delay(200);
+    isWristBusy = false;
 }
 
 int calculateNearGoal() {

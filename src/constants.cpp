@@ -8,6 +8,8 @@ int minHeight = 15;
 int minWristPosition = 200;
 
 bool isTaking = false;
+bool isWristFinished = false;
+bool isWristBusy = false;
 
 int trackingWheelDiameter = 2; // in inches
 

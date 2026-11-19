@@ -99,6 +99,8 @@ void opcontrol() {
 		int dir = master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
 		chassis.arcade(dir, turn); 
 
+		
+
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
 			elevator.move_velocity(100);
 		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN)) {
@@ -106,6 +108,11 @@ void opcontrol() {
 		} else {
 			elevator.move_velocity(0);
 		}
+
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+			wrist.toggle();
+		}
+			
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
 			sensor.set_led_pwm(100);
@@ -119,7 +126,7 @@ void opcontrol() {
 			toggle.move_velocity(0);
 		}	
 
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
 			pros::Task wristTask(turnWrist);
 		}
 		
@@ -143,12 +150,14 @@ void opcontrol() {
 			isExecute = false;
 		}
 			
-
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
+			if (wrist.is_extended()) {
+				pros::Task wristTask(turnWrist);
+			}
+		}
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
 			if (!wrist.is_extended()) {
 				setLevelElevator(0);
-			} else {
-				pros::Task wristTask(turnWrist);
 			}
 			piston.extend(); 
 			isTaking = true;       
@@ -161,13 +170,16 @@ void opcontrol() {
 			isTaking = false;
 		}
 
+		
 		/*
-
 		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250 && !master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-			setLevelElevator(level);
+			if (!isWristBusy) {
+				setLevelElevator(level);
+			}
 		}
+			*/
 
-		*/
+		
 
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			piston.extend();
