@@ -18,9 +18,9 @@
 
 pros::Controller master(pros::E_CONTROLLER_MASTER);
 
-pros::adi::Pneumatics piston('A', false, true);
+pros::adi::Pneumatics piston('A', false, false);
 
-pros::adi::Pneumatics wrist('B', true, true);
+pros::adi::Pneumatics wrist('B', false, false);
 
 pros::MotorGroup right_motor_group({1, 2, -9}, pros::v5::MotorGears::blue);
 // right motor group
@@ -105,17 +105,6 @@ bool isToggleBLUE() {
 
 bool isToggleYELLOW() {
     return sensor.get_hue() > 30 && sensor.get_hue() < 80;
-}
-
-void turnWrist(void* param) {
-    while (elevator.get_position() < minWristPosition) {
-        elevator.move_absolute(minWristPosition + 25, 200);
-        isWristBusy = true;
-    } 
-
-    wrist.toggle();
-    pros::delay(200);
-    isWristBusy = false;
 }
 
 int calculateNearGoal() {
@@ -212,7 +201,7 @@ pros::Task screen_task([]() {
         pros::lcd::print(4, "X: %f", chassis.getPose().x); // x
         pros::lcd::print(5, "Y: %f", chassis.getPose().y); // y
         pros::lcd::print(6, "Theta: %f", chassis.getPose().theta);
-        pros::lcd::print(2, "Elevator: %f", elevator.get_position()); // elevator position
+        //pros::lcd::print(2, "Elevator: %f", elevator.get_position()); // elevator position
         pros::lcd::print(7, "Goal: %d", calculateNearGoal());
         
         // delay to save resources

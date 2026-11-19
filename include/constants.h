@@ -18,6 +18,5 @@ extern std::vector<lemlib::Pose> GoalPoses;
 extern AllianceColor currentAlliance;
 
 extern bool isTaking;
-extern bool isWristFinished;
-extern bool isWristBusy;
+extern bool isJoystick;
 #endif

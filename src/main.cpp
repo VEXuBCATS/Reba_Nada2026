@@ -92,7 +92,6 @@ void autonomous() {
 void opcontrol() {
 	int level = 0;
 	uint32_t tiempoInicio = 0;;
-	bool isExecute = false;
 	while (true) {
 
 		int turn = master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);    // Gets amount forward/backward from left joystick
@@ -100,6 +99,7 @@ void opcontrol() {
 		chassis.arcade(dir, turn); 
 
 		
+		/*
 
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_UP)) {
 			elevator.move_velocity(100);
@@ -112,6 +112,8 @@ void opcontrol() {
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
 			wrist.toggle();
 		}
+
+		*/
 			
 		
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
@@ -127,38 +129,31 @@ void opcontrol() {
 		}	
 
 		if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)) {
-			pros::Task wristTask(turnWrist);
+			wrist.toggle();
 		}
 		
 		if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) >= 120) {
-			if (!isExecute) {
+			if (!isJoystick) {
 				level += 1;
 				if (level > 4) {
 					level = 4;
 				}
-				isExecute = true;
+				isJoystick = true;
 			}
 		} else if (master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y) <= -120) {
-			if (!isExecute) {
+			if (!isJoystick) {
 				level -= 1;
 				if (level < 0) {
 					level = 0;
 				}
-				isExecute = true;
+				isJoystick = true;
 			}
 		} else {
-			isExecute = false;
-		}
-			
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)) {
-			if (wrist.is_extended()) {
-				pros::Task wristTask(turnWrist);
-			}
+			isJoystick = false;
 		}
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
-			if (!wrist.is_extended()) {
-				setLevelElevator(0);
-			}
+			wrist.retract();
+			setLevelElevator(0);
 			piston.extend(); 
 			isTaking = true;       
 			level = 1;
@@ -171,13 +166,11 @@ void opcontrol() {
 		}
 
 		
-		/*
-		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250 && !master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-			if (!isWristBusy) {
-				setLevelElevator(level);
-			}
+		
+		if(!master.get_digital(pros::E_CONTROLLER_DIGITAL_L2) && (pros::millis() - tiempoInicio) >= 250) {
+			setLevelElevator(level);
 		}
-			*/
+		
 
 		
 
